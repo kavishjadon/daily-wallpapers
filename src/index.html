@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Daily Wallpapers</title>
+    <link rel="stylesheet" href="assets/css/style-min.css" />
+    <link rel="stylesheet" href="assets/css/loading-bar.min.css" />
+    <script src="assets/js/loading-bar.min.js"></script>
+    <script src="assets/js/vue.js"></script>
+    <script defer src="./renderer.js"></script>
+    <style>
+      .ldBar-label {
+        color: white;
+        font-size: 1em;
+        font-weight: 900;
+      }
+      .ldBar path.mainline {
+        stroke-width: 8;
+        stroke: #3063ff;
+        /* stroke-linecap: round; */
+      }
+      .ldBar path.baseline {
+        stroke-width: 10;
+        stroke: #f1f2f3;
+        /* stroke-linecap: round; */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="main">
+      <!-- No results page -->
+      <transition name="fade">
+        <div class="no-result" v-show="!result">
+          <img src="assets/images/empty_state.png" />
+          <h2>No results found!</h2>
+          <button @click="this.goHome">Go Home</button>
+        </div>
+      </transition>
+
+      <!-- Loading Bar -->
+      <transition name="fade">
+        <div class="loading-bar" v-show="applying">
+          <div
+            class="ldBar label-center"
+            data-preset="circle"
+            style="width: 89px; height: 89px"
+          ></div>
+        </div>
+      </transition>
+
+      <!-- Search Screen -->
+      <transition name="fade">
+        <div class="search" v-show="searching">
+          <span class="closebtn" @click="searchToggle" title="Close Search"
+            >×</span
+          >
+          <div class="search-content">
+            <input
+              type="text"
+              ref="input"
+              placeholder="Type and press enter"
+              name="search"
+              @keyup.enter="search"
+              autofocus
+            />
+          </div>
+        </div>
+      </transition>
+
+      <!-- Photo Grid -->
+      <div class="grid">
+        <img
+          v-for="photo in photos"
+          :key="photo.id"
+          :src="photo.url"
+          @click="applyPhoto(photo.down_url)"
+        />
+      </div>
+
+      <!-- Photos Loader -->
+      <div class="lds-ellipsis" v-show="link">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </body>
+</html>
