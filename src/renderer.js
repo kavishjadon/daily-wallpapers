@@ -47,10 +47,7 @@ let main = new Vue({
               temp_photos.push({
                 id: uuid(),
                 url: imgLinks[key].attribs.src,
-                down_url: imgLinks[key].attribs.src.replace(
-                  "300x168",
-                  `${this.width}x${this.height}`
-                ),
+                down_url: imgLinks[key].attribs.src.replace("300x168", `${this.width}x${this.height}`),
               });
             }
           }
@@ -81,7 +78,7 @@ let main = new Vue({
               (async () => {
                 await wallpaper.set(filePath);
                 this.applying = false;
-                progress.set(0);
+                setTimeout(() => progress.set(0), 1e3);
               })();
             });
             res.data.pipe(fs.createWriteStream(filePath));
@@ -107,10 +104,7 @@ let main = new Vue({
       return false;
     },
     search: function (e) {
-      this.link =
-        e.target.value == ""
-          ? ``
-          : `/search/?query=${encodeURI(e.target.value)}`;
+      this.link = e.target.value == "" ? `` : `/search/?query=${encodeURI(e.target.value)}`;
       this.canFetch = false;
       this.photos = [];
       e.target.value = "";
