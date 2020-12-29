@@ -10,7 +10,7 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 940,
+    width: 945,
     height: 540,
     resizable: false,
     autoHideMenuBar: true,
@@ -20,7 +20,7 @@ const createWindow = () => {
     },
   });
 
-  Menu.setApplicationMenu(null);
+  // Menu.setApplicationMenu(null);
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, "index.html"));
 
