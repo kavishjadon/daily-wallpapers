@@ -1,11 +1,12 @@
 {
   "name": "daily-wallpapers",
   "productName": "Daily Wallpapers",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Get beautiful wallpapers daily",
   "main": "src/index.js",
   "scripts": {
     "start": "electron .",
+    "clean": "rm -rf dist",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=src/assets/icons/mac/icon.icns --prune=true --out=dist",
     "package-win": "electron-packager . daily-wallpapers --overwrite --asar=true --platform=win32 --arch=ia32 --icon=src/assets/icons/win/icon.ico --prune=true --out=dist --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Daily Wallpapers\"",
     "package-linux": "electron-packager . daily-wallpapers --overwrite --asar=true --platform=linux --arch=x64 --icon=src/assets/icons/png/icon.png --prune=true --out=dist",
@@ -18,7 +19,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
     "electron-squirrel-startup": "^1.0.0",
     "mousetrap": "^1.6.5",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "electron": "^10.1.1",
+    "electron-installer-debian": "^3.1.0",
     "electron-packager": "^15.1.0"
   }
 }

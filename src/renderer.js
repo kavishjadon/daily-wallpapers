@@ -4,6 +4,7 @@ const wallpaper = require("wallpaper");
 const mousetrap = require("mousetrap");
 const app = require("electron").remote.app;
 const path = require("path");
+const services = require("./services");
 const { v4: uuid } = require("uuid");
 const fs = require("fs");
 
@@ -13,12 +14,13 @@ let main = new Vue({
   el: "#main",
   data: {
     photos: [],
-    link: ``,
+    link: "",
+    default_link: "",
     result: true,
     applying: false,
     searching: false,
     canFetch: true,
-    url: "https://wallpaperscraft.com",
+    service: "wallpapers_wide",
     width: "1920",
     height: "1080",
   },
@@ -32,27 +34,18 @@ let main = new Vue({
       }, 1000);
     },
     fetchPhotos: function () {
-      let options = {
-        url: `${this.url}${this.link}`,
-      };
-      axios(options)
-        .then((res) => {
-          let temp_photos = this.photos.slice();
-          let $ = cheerio.load(res.data);
-          let imgLinks = $(".wallpapers__canvas .wallpapers__image");
-          this.link = $(".pager__item_selected").next().find("a").attr("href");
-          this.result = true;
-          for (let key in imgLinks) {
-            if (Number(key) < 18) {
-              temp_photos.push({
-                id: uuid(),
-                url: imgLinks[key].attribs.src,
-                down_url: imgLinks[key].attribs.src.replace("300x168", `${this.width}x${this.height}`),
-              });
-            }
-          }
-          this.photos = temp_photos;
+      services[this.service]({
+        path: this.link || this.default_link,
+        width: this.width,
+        height: this.height,
+      })
+        .then((data) => {
+          let { photos, next_path } = data;
+          console.log(photos);
+          this.link = next_path;
+          this.photos = [...this.photos, ...photos];
           this.canFetch = true;
+          this.result = true;
           if (this.photos.length == 0) this.result = false;
         })
         .catch((err) => this.checkNetwork());
@@ -104,7 +97,10 @@ let main = new Vue({
       return false;
     },
     search: function (e) {
-      this.link = e.target.value == "" ? `` : `/search/?query=${encodeURI(e.target.value)}`;
+      if (e.target.value) {
+        if (this.service == "wallpapers_craft") this.link = `/search/?query=${encodeURI(e.target.value)}`;
+        else this.link = `/search?q=${encodeURI(e.target.value)}`;
+      } else this.link = this.default_link;
       this.canFetch = false;
       this.photos = [];
       e.target.value = "";
@@ -113,12 +109,13 @@ let main = new Vue({
     },
     goHome: function () {
       this.result = true;
-      this.link = "";
+      this.link = this.default_link;
       this.canFetch = false;
       this.fetchPhotos();
     },
   },
   created() {
+    this.default_link = this.service == "wallpapers_wide" ? `/page/${Math.floor(Math.random() * 3800)}` : "";
     this.fetchPhotos();
     mousetrap.bind(["command+s", "ctrl+s"], this.searchToggle);
     window.addEventListener("scroll", this.handleScroll);
